@@ -1,7 +1,8 @@
 import numpy as np
 from activations import Tanh, Sigmoid, Linear
 from losses import MSE
-from optimizer import MomentumSGD
+from optimizers import MomentumSGD
+
 
 class NeuralNet:
     activation_mapping = {
@@ -10,6 +11,7 @@ class NeuralNet:
     }
 
     def __init__(self, inputs, hidden, outputs, activations, loss, seed=None):
+        assert(len(activations) == len(hidden) + 1)
         ns = [inputs, *hidden, outputs]
         self._seed = seed
         if self._seed is not None:
@@ -20,6 +22,14 @@ class NeuralNet:
         self._biases = [np.random.normal(size=ns[i]) for i in range(1, len(ns))]
         self._optimizer = MomentumSGD(0.01, 0.9, self._weights, self._biases)
         self._loss = loss
+
+    def fit(self, x, y):
+        self.train()
+        y_pred = self.forward(x)
+        loss = self._loss(y_pred, y)
+        w_grads, b_grads = self.backward()
+        self._optimizer.update(w_grads, b_grads)
+        return loss
 
     def forward(self, x):
         if len(x.shape) == 1: 
@@ -44,15 +54,6 @@ class NeuralNet:
             b_grads.append(db.squeeze())
         return w_grads[::-1], b_grads[::-1]
 
-    def fit(self, x, y):
-        self.train()
-        y_pred = self.forward(x)
-        self._loss(y_pred, y)
-        w_grads, b_grads = self.backward()
-        old = self._weights[-1]
-        self._optimizer.update(w_grads, b_grads)
-        new = self._weights[-1]
-
     def train(self):
         for a in self._activations: a.train()
         if self._optimizer is not None:
@@ -63,18 +64,5 @@ class NeuralNet:
         if self._optimizer is not None:
             self._optimizer.eval()
 
-    def __repr__(self):
-        return  f'Weights: {"/".join([str(w.shape) for w in self._weights])}\n\
-            Biases: {"/".join([str(b.shape) for b in self._biases])}'
-
-
-if __name__ == '__main__':
-    act = ['sigmoid'] * 2
-    loss = MSE()
-    nn = NeuralNet(inputs=3, hidden=[4], outputs=2, activations=act, loss=loss,
-                    seed=20)
-    x = np.ones(shape=(3,))
-    y = np.ones(shape=(1,2))
-    nn.train()
-    nn.fit(x, y)
-    # nn.backward()
+    def __call__(self, x):
+        return self.forward(x)

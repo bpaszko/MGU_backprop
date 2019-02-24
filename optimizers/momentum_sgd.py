@@ -1,8 +1,11 @@
+from .optimizer import Optimizer
+
 import numpy as np
 
 
-class MomentumSGD:
+class MomentumSGD(Optimizer):
     def __init__(self, lr, momentum, weights, biases):
+        super().__init__()
         self._lr = lr
         self._momentum = momentum
         self._weights = weights
@@ -14,7 +17,6 @@ class MomentumSGD:
         for i in range(len(self._weights)):
             w_update = self._w_grads[i] * self._momentum + new_w_grads[i] * (1-self._momentum)
             b_update = self._b_grads[i] * self._momentum + new_b_grads[i] * (1-self._momentum)
-            #print(np.sum(np.abs(w_update)))
             self._weights[i] = self._weights[i] - self._lr * w_update
             self._biases[i] = self._biases[i] - self._lr * b_update
 
