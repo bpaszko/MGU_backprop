@@ -6,20 +6,12 @@
   "hidden_layers": [
     {
       "activation": "sigmoid",
-      "neurons": 10
-    },
-    {
-      "activation": "sigmoid",
-      "neurons": 10
-    },
-    {
-      "activation": "sigmoid",
-      "neurons": 10
+      "neurons": 1000
     }
   ],
-  "output_layer_activation": "sigmoid",
-  "type": "classification",
-  "train_df": "data/Classification/data.simple.train.1000.csv",
-  "test_df": "data/Classification/data.simple.test.100.csv",
-  "batch_size": 100
+  "output_layer_activation": "linear",
+  "type": "regression",
+  "train_df": "data/Regression/data.square.train.1000.csv",
+  "test_df": "data/Regression/data.square.test.1000.csv",
+  "batch_size": 1
 }

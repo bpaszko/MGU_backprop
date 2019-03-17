@@ -28,7 +28,7 @@ class TrainSummary:
 
 def train(network, epochs, provider_train, provider_test, test_epochs=5):
     summary = TrainSummary()
-    for epoch in tqdm(range(epochs)):
+    for epoch in tqdm(range(epochs), leave=True):
         network.train()
         train_loss_per_epoch = 0
         for iteration, (data, labels) in enumerate(provider_train):
@@ -54,8 +54,8 @@ if __name__ == '__main__':
     json_parser.parse_json()
     train_df = pd.read_csv(json_parser.input_train_file_path)
     test_df = pd.read_csv(json_parser.input_test_file_path)
-    p_train = ClassifierProvider(train_df, batch_size=json_parser.batch_size)
-    p_test = ClassifierProvider(test_df, batch_size=json_parser.batch_size)
+    p_train = RegressionProvider(train_df, batch_size=json_parser.batch_size)
+    p_test = RegressionProvider(test_df, batch_size=json_parser.batch_size)
 
     hidden = json_parser.layers_size
     act = json_parser.layers_activations
@@ -63,8 +63,16 @@ if __name__ == '__main__':
     loss = MSE()
     number_of_iterations = json_parser.number_of_iterations
 
-    nn = NeuralNet(inputs=2, hidden=hidden, outputs=1, activations=act, loss=loss,
+    nn = NeuralNet(inputs=1, hidden=hidden, outputs=1, activations=act, loss=loss,
                     seed=seed)
 
     summary = train(nn, number_of_iterations, p_train, p_test)
-    summary.show()
+    # summary.show()
+    x = test_df[["x"]]
+    y_true = test_df[["y"]]
+    y_pred = nn.forward(x)
+    plt.close()
+    plt.plot(x, y_true, label="true")
+    plt.plot(x, y_pred, label="predicted")
+    plt.legend()
+    plt.show()
