@@ -35,11 +35,6 @@ class NeuralNet:
         self._optimizer.update(w_grads, b_grads)
         return loss
 
-    def predict(self, x):
-        self.eval()
-        y_pred = self.forward(x)
-        return y_pred
-
     def forward(self, x):
         if len(x.shape) == 1: 
             x = np.expand_dims(x, axis=0)

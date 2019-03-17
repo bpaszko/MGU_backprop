@@ -4,12 +4,12 @@ import numpy as np
 
 
 class RegressionProvider(Provider):
-    def __init__(self, df, batch_size, shuffle=False):
+    def __init__(self, df, batch_size, shuffle=True):
         super().__init__()
         self._df = df
         self._batch_size = batch_size
         self._pos = 0
-        self._shuffle = True 
+        self._shuffle = shuffle
 
     def __iter__(self):
         self._pos = 0
@@ -27,3 +27,6 @@ class RegressionProvider(Provider):
         self._pos = next_pos
         return (self._df['x'].iloc[current_pos:next_pos].values, 
             np.expand_dims(self._df['y'].iloc[current_pos:next_pos].values, axis=1))
+
+    def __len__(self):
+        return len(self._df)
