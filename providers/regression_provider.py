@@ -2,6 +2,7 @@ from .provider import Provider
 
 import numpy as np
 
+
 class RegressionProvider(Provider):
     def __init__(self, df, batch_size, shuffle=False):
         super().__init__()

@@ -1,6 +1,7 @@
 from networks.neural_net import NeuralNet
 from losses import MSE
-from providers import ClassifierProvider
+from providers import ClassifierProvider, RegressionProvider
+from json_parser import JsonParser
 from tqdm import tqdm
 
 import pandas as pd
@@ -48,17 +49,22 @@ def train(network, epochs, provider_train, provider_test, test_epochs=5):
     return summary
             
 
-
 if __name__ == '__main__':
-    train_df = pd.read_csv('data/Classification/data.simple.train.1000.csv')
-    test_df = pd.read_csv('data/Classification/data.simple.test.100.csv')
-    p_train = ClassifierProvider(train_df, batch_size=100)
-    p_test = ClassifierProvider(test_df, batch_size=100)
+    json_parser = JsonParser("architecture.json")
+    json_parser.parse_json()
+    train_df = pd.read_csv(json_parser.input_train_file_path)
+    test_df = pd.read_csv(json_parser.input_test_file_path)
+    p_train = ClassifierProvider(train_df, batch_size=json_parser.batch_size)
+    p_test = ClassifierProvider(test_df, batch_size=json_parser.batch_size)
 
-    hidden = [10, 10, 10]
-    act = ['sigmoid'] * (len(hidden) + 1)
+    hidden = json_parser.layers_size
+    act = json_parser.layers_activations
+    seed = json_parser.seed
     loss = MSE()
+    number_of_iterations = json_parser.number_of_iterations
+
     nn = NeuralNet(inputs=2, hidden=hidden, outputs=1, activations=act, loss=loss,
-                    seed=20)
-    summary = train(nn, 100, p_train, p_test)
+                    seed=seed)
+
+    summary = train(nn, number_of_iterations, p_train, p_test)
     summary.show()

@@ -1,12 +1,16 @@
 import numpy as np
-from activations import Tanh, Sigmoid, Linear
+from activations import *
 from losses import MSE
 from optimizers import MomentumSGD
 
 
 class NeuralNet:
     activation_mapping = {
+        'arctan': Arctan,
+        'linear': Linear,
+        'relu': ReLu,
         'sigmoid': Sigmoid,
+        'softplus': SoftPlus,
         'tanh': Tanh
     }
 
@@ -30,6 +34,11 @@ class NeuralNet:
         w_grads, b_grads = self.backward()
         self._optimizer.update(w_grads, b_grads)
         return loss
+
+    def predict(self, x):
+        self.eval()
+        y_pred = self.forward(x)
+        return y_pred
 
     def forward(self, x):
         if len(x.shape) == 1: 
