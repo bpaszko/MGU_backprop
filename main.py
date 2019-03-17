@@ -68,11 +68,12 @@ if __name__ == '__main__':
 
     summary = train(nn, number_of_iterations, p_train, p_test)
     # summary.show()
-    x = test_df[["x"]]
-    y_true = test_df[["y"]]
+    x = test_df[["x"]].values
+    y_true = test_df[["y"]].values
     y_pred = nn.forward(x)
+
     plt.close()
-    plt.plot(x, y_true, label="true")
-    plt.plot(x, y_pred, label="predicted")
+    plt.plot(x, y_true, color='blue', label="true")
+    plt.plot(x, y_pred, 'r--', label="predicted")
     plt.legend()
     plt.show()

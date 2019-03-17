@@ -1,17 +1,25 @@
 {
   "learning_rate": 0.01,
   "momentum": 0.9,
-  "number_of_iterations": 100,
+  "number_of_iterations": 500,
   "seed": 123,
   "hidden_layers": [
     {
       "activation": "sigmoid",
-      "neurons": 1000
+      "neurons": 256
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 256
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 256
     }
   ],
   "output_layer_activation": "linear",
   "type": "regression",
-  "train_df": "data/Regression/data.square.train.1000.csv",
-  "test_df": "data/Regression/data.square.test.1000.csv",
-  "batch_size": 1
+  "train_df": "data/Regression/data.activation.train.1000.csv",
+  "test_df": "data/Regression/data.activation.test.1000.csv",
+  "batch_size": 200
 }

@@ -15,10 +15,10 @@ class MomentumSGD(Optimizer):
 
     def update(self, new_w_grads, new_b_grads):
         for i in range(len(self._weights)):
-            w_update = self._w_grads[i] * self._momentum + new_w_grads[i] * (1-self._momentum)
-            b_update = self._b_grads[i] * self._momentum + new_b_grads[i] * (1-self._momentum)
-            self._weights[i] = self._weights[i] - self._lr * w_update
-            self._biases[i] = self._biases[i] - self._lr * b_update
+            self._w_grads[i] = self._w_grads[i] * self._momentum + new_w_grads[i] * (1-self._momentum)
+            self._b_grads[i] = self._b_grads[i] * self._momentum + new_b_grads[i] * (1-self._momentum)
+            self._weights[i] = self._weights[i] - self._lr * self._w_grads[i]
+            self._biases[i] = self._biases[i] - self._lr * self._b_grads[i]
 
     def train(self):
         if not self._w_grads:
