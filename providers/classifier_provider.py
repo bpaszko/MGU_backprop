@@ -4,7 +4,7 @@ import numpy as np
 
 
 class ClassifierProvider(Provider):
-    def __init__(self, df, batch_size, shuffle=True):
+    def __init__(self, df, batch_size, shuffle=False):
         super().__init__()
         self._df = df
         self._classes = self._df['cls'].nunique()
@@ -39,8 +39,6 @@ class ClassifierProvider(Provider):
 
     def one_hot_encoding(self, labels):
         labels = labels.apply(lambda x: x-1).values
-        y = np.zeros(shape=(len(labels), self._classes))
-        y[np.arange(len(labels)), labels] = 1
         y = np.zeros(shape=(len(labels), self._classes))
         y[np.arange(len(labels)), labels] = 1
         return y

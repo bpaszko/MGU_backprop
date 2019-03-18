@@ -35,12 +35,22 @@ class NeuralNet:
         self._optimizer.update(w_grads, b_grads)
         return loss
 
-    def predict(self, probability=False):
-
+    def predict(self, x, probability=False):
+        self.eval()
+        y_pred = self.forward(x)
+        if probability:
+            y_pred_exp = np.exp(y_pred)
+            y_sums_in_rows = np.expand_dims(y_pred_exp.sum(axis=1), axis=1)
+            y_pred = y_pred_exp / y_sums_in_rows
+        else:
+            y_pred_one_hot = np.zeros_like(y_pred)
+            y_pred_one_hot[np.arange(y_pred.shape[0]), y_pred.argmax(axis=1)] = 1
+            y_pred = y_pred_one_hot
+        return y_pred
 
     def forward(self, x):
         if len(x.shape) == 1: 
-            x = np.expand_dims(x, axis=0)
+            x = np.expand_dims(x, axis=1)
 
         x = self._activations[0](x)
         for w, b, a in zip(self._weights, self._biases, self._activations[1:]):

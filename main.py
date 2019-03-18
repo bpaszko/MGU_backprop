@@ -9,6 +9,35 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+class VisualizationProvider:
+    def __init__(self, df, nn, assignment_type):
+        assert assignment_type in {"classification", "regression"}, "Wrong assignment type"
+        self._assignment_type = assignment_type
+        self._df = df
+        self._nn = nn
+
+    def plot(self):
+        if self._assignment_type == "regression":
+            x = self._df[["x"]].values
+            y_true = self._df[["y"]].values
+            y_pred = nn.forward(x)
+            plt.plot(x, y_true, color='blue', label="true")
+            plt.plot(x, y_pred, 'r--', label="predicted")
+            plt.legend()
+            plt.show()
+        elif self._assignment_type == "classification":
+            x = self._df[["x", "y"]].values
+            y_true = self._df[["cls"]].values
+            y_pred = self._nn.predict(x)
+            plt.subplot(121)
+            plt.scatter(x[:, 0], x[:, 1], c=np.squeeze(y_true))
+            plt.title("True")
+            plt.subplot(122)
+            plt.scatter(x[:, 0], x[:, 1], c=np.argmax(y_pred, axis=1))
+            plt.title("Predicted")
+            plt.show()
+
+
 class TrainSummary:
     def __init__(self):
         self.train_losses = []
@@ -28,7 +57,7 @@ class TrainSummary:
 
 def train(network, epochs, provider_train, provider_test, test_epochs=5):
     summary = TrainSummary()
-    for epoch in tqdm(range(epochs), leave=False):
+    for epoch in tqdm(range(epochs)):
         network.train()
         train_loss_per_epoch = 0
         for iteration, (data, labels) in enumerate(provider_train):
@@ -64,7 +93,6 @@ if __name__ == '__main__':
     elif type_of_assigment == "classification":
         p_train = ClassifierProvider(train_df, batch_size=json_parser.batch_size)
         p_test = ClassifierProvider(test_df, batch_size=json_parser.batch_size)
-
     hidden = json_parser.layers_size
     act = json_parser.layers_activations
     seed = json_parser.seed
@@ -75,18 +103,8 @@ if __name__ == '__main__':
                    activations=act, loss=loss, seed=seed)
 
     summary = train(nn, number_of_iterations, p_train, p_test)
-    # summary.show()
+    summary.show()
+    visualization_provider = VisualizationProvider(test_df, nn, type_of_assigment)
+    visualization_provider.plot()
 
-    # TODO visualisation for classification
-    # TODO visualisation for regression is slightly different on his site
     # TODO should allow to show weights during training (save to file on request?)
-
-    x = test_df[["x"]].values
-    y_true = test_df[["y"]].values
-    y_pred = nn.forward(x)
-
-    plt.close()
-    plt.plot(x, y_true, color='blue', label="true")
-    plt.plot(x, y_pred, 'r--', label="predicted")
-    plt.legend()
-    plt.show()
