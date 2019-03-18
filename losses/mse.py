@@ -7,7 +7,7 @@ class MSE(Loss):
 
     def __call__(self, y_pred, y_true):
         self._grad = (y_pred - y_true) / y_pred.shape[0]
-        return ((y_pred - y_true)**2).mean(axis=1) / 2
+        return ((y_pred - y_true)**2).mean() / 2
 
     def backward(self):
         return self._grad

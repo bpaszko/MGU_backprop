@@ -7,6 +7,7 @@ class ClassifierProvider(Provider):
     def __init__(self, df, batch_size, shuffle=True):
         super().__init__()
         self._df = df
+        self._classes = self._df['cls'].nunique()
         self._batch_size = batch_size
         self._pos = 0
         self._shuffle = shuffle
@@ -25,8 +26,11 @@ class ClassifierProvider(Provider):
         current_pos = self._pos
         next_pos = min(current_pos + self._batch_size, samples)
         self._pos = next_pos
-        return (self._df[['x', 'y']].iloc[current_pos:next_pos].values, 
-            np.expand_dims(self._df['cls'].iloc[current_pos:next_pos].apply(lambda x: x-1).values, axis=1))
+        x = self._df[['x', 'y']].iloc[current_pos:next_pos].values
+        labels = self._df['cls'].iloc[current_pos:next_pos].apply(lambda x: x-1).values
+        y = np.zeros(shape=(len(labels), self._classes))
+        y[np.arange(len(labels)), labels] = 1
+        return x, y
 
     def __len__(self):
         return len(self._df)

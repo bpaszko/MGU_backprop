@@ -19,7 +19,7 @@
   ],
   "output_layer_activation": "linear",
   "type": "regression",
-  "train_df": "data/Regression/data.activation.train.1000.csv",
-  "test_df": "data/Regression/data.activation.test.1000.csv",
+  "train_df": "data/Regression/data.multimodal.train.1000.csv",
+  "test_df": "data/Regression/data.multimodal.test.1000.csv",
   "batch_size": 200
 }
