@@ -7,6 +7,7 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
 
 
 class VisualizationProvider:
@@ -16,25 +17,53 @@ class VisualizationProvider:
         self._df = df
         self._nn = nn
 
-    def plot(self):
+    def show(self):
         if self._assignment_type == "regression":
             x = self._df[["x"]].values
             y_true = self._df[["y"]].values
-            y_pred = nn.forward(x)
+            y_pred = self._nn.forward(x)
             plt.plot(x, y_true, color='blue', label="true")
             plt.plot(x, y_pred, 'r--', label="predicted")
             plt.legend()
             plt.show()
         elif self._assignment_type == "classification":
             x = self._df[["x", "y"]].values
-            y_true = self._df[["cls"]].values
+            y_true = self._df["cls"].apply(lambda z: z-1).values
             y_pred = self._nn.predict(x)
+            y_pred = np.argmax(y_pred, axis=1)
             plt.subplot(121)
-            plt.scatter(x[:, 0], x[:, 1], c=np.squeeze(y_true), alpha=0.2)
+            plt.scatter(x[:, 0], x[:, 1], c=y_true, alpha=0.5)
             plt.title("True")
             plt.subplot(122)
-            plt.scatter(x[:, 0], x[:, 1], c=np.argmax(y_pred, axis=1))
+            plt.scatter(x[:, 0], x[:, 1], c=y_pred)
             plt.title("Predicted")
+            plt.show()
+            accuracy = accuracy_score(y_true, y_pred)
+            return accuracy
+
+    def plot_map(self):
+        if self._assignment_type == "classification":
+            plt.cla()  # Clear axis
+            plt.clf()  # Clear figure
+
+            y_min = self._df["y"].min()
+            y_max = self._df["y"].max()
+            x_min = self._df["x"].min()
+            x_max = self._df["x"].max()
+            ym, xm = np.mgrid[y_min:y_max:0.005, x_min:x_max:0.005]
+            zm = np.array([xm, ym])
+            zm = zm.swapaxes(0, 2)
+            zm = zm.swapaxes(0, 1)
+            x_shape = zm.shape[0]
+            y_shape = zm.shape[1]
+            zm= zm.reshape(x_shape*y_shape, 2)
+            pred_z = self._nn.predict(zm).argmax(axis=1).reshape(x_shape, y_shape)
+            plt.pcolormesh(xm, ym, pred_z, alpha=0.1)
+
+            df_sample = self._df.sample(1000)
+            x = df_sample[["x", "y"]].values
+            y_true = df_sample["cls"].apply(lambda z: z - 1).values
+            plt.scatter(x[:, 0], x[:, 1], c=y_true)
             plt.show()
 
 
@@ -108,7 +137,7 @@ if __name__ == '__main__':
 
     summary = train(nn, number_of_iterations, p_train, p_test)
     summary.show()
-    visualization_provider = VisualizationProvider(test_df, nn, type_of_assigment)
-    visualization_provider.plot()
-
-    # TODO should allow to show weights during training (save to file on request?)
+    visualization = VisualizationProvider(test_df, nn, type_of_assigment)
+    x = visualization.show()
+    print("Accuracy: {}".format(x))
+    visualization.plot_map()

@@ -1,0 +1,48 @@
+{
+  "learning_rate": 0.01,
+  "momentum": 0.9,
+  "number_of_iterations": 100,
+  "seed": 123,
+  "hidden_layers": [
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    }
+  ],
+  "type": "classification",
+  "train_df": "data/Classification/data.circles.train.10000.csv",
+  "test_df": "data/Classification/data.circles.test.10000.csv",
+  "batch_size": 10
+}

@@ -4,7 +4,7 @@ import numpy as np
 
 
 class ClassifierProvider(Provider):
-    def __init__(self, df, batch_size, shuffle=False):
+    def __init__(self, df, batch_size, shuffle=True):
         super().__init__()
         self._df = df
         self._classes = self._df['cls'].nunique()

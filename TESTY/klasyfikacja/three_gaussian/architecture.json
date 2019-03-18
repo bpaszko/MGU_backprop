@@ -6,11 +6,7 @@
   "hidden_layers": [
     {
       "activation": "sigmoid",
-      "neurons": 50
-    },
-    {
-      "activation": "sigmoid",
-      "neurons": 50
+      "neurons": 100
     },
     {
       "activation": "sigmoid",
@@ -18,7 +14,7 @@
     }
   ],
   "type": "classification",
-  "train_df": "data/Classification/data.xor.train.10000.csv",
-  "test_df": "data/Classification/data.xor.test.10000.csv",
+  "train_df": "data/Classification/data.three_gauss.train.10000.csv",
+  "test_df": "data/Classification/data.three_gauss.test.10000.csv",
   "batch_size": 10
 }

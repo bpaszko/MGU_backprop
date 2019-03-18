@@ -1,0 +1,16 @@
+{
+  "learning_rate": 0.01,
+  "momentum": 0.9,
+  "number_of_iterations": 100,
+  "seed": 123,
+  "hidden_layers": [
+    {
+      "activation": "sigmoid",
+      "neurons": 10
+    }
+  ],
+  "type": "regression",
+  "train_df": "data/Regression/data.activation.train.10000.csv",
+  "test_df": "data/Regression/data.activation.test.10000.csv",
+  "batch_size": 10
+}

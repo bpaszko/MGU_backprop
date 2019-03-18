@@ -1,5 +1,6 @@
 from .activation import Activation
 
+import numpy as np
 import logging
 
 
@@ -12,7 +13,7 @@ class ReLu(Activation):
         return self._output
 
     def __call__(self, x):
-        output = x if x >= 0 else 0
+        output = np.maximum(x, 0)
         if self._train:
             self._input = x
             self._output = output
@@ -20,7 +21,7 @@ class ReLu(Activation):
 
     def backward(self):
         if self._train:
-            return 1 if self._input >= 0 else 0
+            return np.ones_like(self._input) * (self._input > 0)
         else:
             logging.log(logging.WARN, 'Differentiating with train=False')
             return 0
