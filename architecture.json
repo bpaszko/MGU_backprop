@@ -13,7 +13,6 @@
       "neurons": 20
     }
   ],
-  "output_layer_activation": "sigmoid",
   "type": "classification",
   "train_df": "data/Classification/data.three_gauss.train.1000.csv",
   "test_df": "data/Classification/data.three_gauss.test.1000.csv",

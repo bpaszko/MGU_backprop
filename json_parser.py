@@ -10,7 +10,6 @@ class JsonParser:
         "number_of_iterations",
         "seed",
         "hidden_layers",
-        "output_layer_activation",
         "type",
         "train_df",
         "test_df",
@@ -50,8 +49,6 @@ class JsonParser:
         assert os.path.isfile(self.input_train_file_path), "Train file doesn't exist"
         self.type = data["type"]
         assert self.type in ["classification", "regression"], "Wrong assignment type"
-        self.output_layer_activation = data["output_layer_activation"]
-        assert self.output_layer_activation in NeuralNet.activation_mapping.keys(), "Wrong activation type"
         self.batch_size = int(data["batch_size"])
         assert int(self.batch_size) > 0, "Wrong batch size value"
         for layer in data["hidden_layers"]:
@@ -60,4 +57,3 @@ class JsonParser:
             assert layer["activation"] in NeuralNet.activation_mapping.keys(), "Wrong activation type"
             self.layers_size.append(size)
             self.layers_activations.append(layer["activation"])
-        self.layers_activations.append(self.output_layer_activation)

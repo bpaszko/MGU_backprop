@@ -30,7 +30,7 @@ class VisualizationProvider:
             y_true = self._df[["cls"]].values
             y_pred = self._nn.predict(x)
             plt.subplot(121)
-            plt.scatter(x[:, 0], x[:, 1], c=np.squeeze(y_true))
+            plt.scatter(x[:, 0], x[:, 1], c=np.squeeze(y_true), alpha=0.2)
             plt.title("True")
             plt.subplot(122)
             plt.scatter(x[:, 0], x[:, 1], c=np.argmax(y_pred, axis=1))
@@ -87,14 +87,18 @@ if __name__ == '__main__':
     type_of_assigment = json_parser.type
     p_train = None
     p_test = None
+    output_layer = None
     if type_of_assigment == "regression":
         p_train = RegressionProvider(train_df, batch_size=json_parser.batch_size)
         p_test = RegressionProvider(test_df, batch_size=json_parser.batch_size)
+        output_layer = "linear"
     elif type_of_assigment == "classification":
         p_train = ClassifierProvider(train_df, batch_size=json_parser.batch_size)
         p_test = ClassifierProvider(test_df, batch_size=json_parser.batch_size)
+        output_layer = "sigmoid"
     hidden = json_parser.layers_size
     act = json_parser.layers_activations
+    act.append(output_layer)
     seed = json_parser.seed
     loss = MSE()
     number_of_iterations = json_parser.number_of_iterations
