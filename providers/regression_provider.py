@@ -25,7 +25,7 @@ class RegressionProvider(Provider):
         current_pos = self._pos
         next_pos = min(current_pos + self._batch_size, samples)
         self._pos = next_pos
-        return (self._df['x'].iloc[current_pos:next_pos].values, 
+        return (self._df[['x']].iloc[current_pos:next_pos].values,
             np.expand_dims(self._df['y'].iloc[current_pos:next_pos].values, axis=1))
 
     def __len__(self):
