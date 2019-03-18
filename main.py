@@ -28,7 +28,7 @@ class TrainSummary:
 
 def train(network, epochs, provider_train, provider_test, test_epochs=5):
     summary = TrainSummary()
-    for epoch in tqdm(range(epochs), leave=True):
+    for epoch in tqdm(range(epochs), leave=False):
         network.train()
         train_loss_per_epoch = 0
         for iteration, (data, labels) in enumerate(provider_train):
@@ -55,13 +55,15 @@ if __name__ == '__main__':
     train_df = pd.read_csv(json_parser.input_train_file_path)
     test_df = pd.read_csv(json_parser.input_test_file_path)
 
-    # TODO create appropriate provider based on json
-    # p_train = ClassifierProvider(train_df, batch_size=json_parser.batch_size)
-    # p_test = ClassifierProvider(test_df, batch_size=json_parser.batch_size)
-    
-    p_train = RegressionProvider(train_df, batch_size=json_parser.batch_size)
-    p_test = RegressionProvider(test_df, batch_size=json_parser.batch_size)
-
+    type_of_assigment = json_parser.type
+    p_train = None
+    p_test = None
+    if type_of_assigment == "regression":
+        p_train = RegressionProvider(train_df, batch_size=json_parser.batch_size)
+        p_test = RegressionProvider(test_df, batch_size=json_parser.batch_size)
+    elif type_of_assigment == "classification":
+        p_train = ClassifierProvider(train_df, batch_size=json_parser.batch_size)
+        p_test = ClassifierProvider(test_df, batch_size=json_parser.batch_size)
 
     hidden = json_parser.layers_size
     act = json_parser.layers_activations
@@ -69,8 +71,8 @@ if __name__ == '__main__':
     loss = MSE()
     number_of_iterations = json_parser.number_of_iterations
 
-    nn = NeuralNet(inputs=1, hidden=hidden, outputs=1, activations=act, loss=loss,
-                    seed=seed)
+    nn = NeuralNet(inputs=p_train.number_of_inputs, hidden=hidden, outputs=p_train.number_of_outputs,
+                   activations=act, loss=loss, seed=seed)
 
     summary = train(nn, number_of_iterations, p_train, p_test)
     # summary.show()

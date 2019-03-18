@@ -11,6 +11,9 @@ class RegressionProvider(Provider):
         self._pos = 0
         self._shuffle = shuffle
 
+        self.number_of_inputs = 1
+        self.number_of_outputs = 1
+
     def __iter__(self):
         self._pos = 0
         if self._shuffle:

@@ -12,6 +12,9 @@ class ClassifierProvider(Provider):
         self._pos = 0
         self._shuffle = shuffle
 
+        self.number_of_inputs = 2
+        self.number_of_outputs = self._classes
+
     def __iter__(self):
         self._pos = 0
         if self._shuffle:
@@ -27,10 +30,18 @@ class ClassifierProvider(Provider):
         next_pos = min(current_pos + self._batch_size, samples)
         self._pos = next_pos
         x = self._df[['x', 'y']].iloc[current_pos:next_pos].values
-        labels = self._df['cls'].iloc[current_pos:next_pos].apply(lambda x: x-1).values
-        y = np.zeros(shape=(len(labels), self._classes))
-        y[np.arange(len(labels)), labels] = 1
+        labels = self._df['cls'].iloc[current_pos:next_pos]
+        y = self.one_hot_encoding(labels)
         return x, y
 
     def __len__(self):
         return len(self._df)
+
+    def one_hot_encoding(self, labels):
+        labels = labels.apply(lambda x: x-1).values
+        y = np.zeros(shape=(len(labels), self._classes))
+        y[np.arange(len(labels)), labels] = 1
+        y = np.zeros(shape=(len(labels), self._classes))
+        y[np.arange(len(labels)), labels] = 1
+        return y
+
