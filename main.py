@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from networks.neural_net import NeuralNet
 from losses import MSE
 from providers import ClassifierProvider, RegressionProvider
@@ -8,6 +9,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
+import argparse
 
 
 class VisualizationProvider:
@@ -41,7 +43,7 @@ class VisualizationProvider:
             accuracy = accuracy_score(y_true, y_pred)
             return accuracy
 
-    def plot_map(self):
+    def show_map(self):
         if self._assignment_type == "classification":
             plt.cla()  # Clear axis
             plt.clf()  # Clear figure
@@ -56,11 +58,11 @@ class VisualizationProvider:
             zm = zm.swapaxes(0, 1)
             x_shape = zm.shape[0]
             y_shape = zm.shape[1]
-            zm= zm.reshape(x_shape*y_shape, 2)
+            zm = zm.reshape(x_shape*y_shape, 2)
             pred_z = self._nn.predict(zm).argmax(axis=1).reshape(x_shape, y_shape)
             plt.pcolormesh(xm, ym, pred_z, alpha=0.1)
 
-            df_sample = self._df.sample(1000)
+            df_sample = self._df.sample(min(1000, self._df.shape[0]))
             x = df_sample[["x", "y"]].values
             y_true = df_sample["cls"].apply(lambda z: z - 1).values
             plt.scatter(x[:, 0], x[:, 1], c=y_true)
@@ -84,7 +86,7 @@ class TrainSummary:
         plt.show()
 
 
-def train(network, epochs, provider_train, provider_test, test_epochs=5):
+def train(network, epochs, provider_train, provider_test, print_weights, test_epochs=5):
     summary = TrainSummary()
     for epoch in tqdm(range(epochs)):
         network.train()
@@ -94,7 +96,10 @@ def train(network, epochs, provider_train, provider_test, test_epochs=5):
             train_loss_per_epoch += loss
         train_loss_per_epoch /= len(provider_train)
         summary.train_losses.append((epoch, train_loss_per_epoch))
-
+        if print_weights:
+            print("Epoch {}".format(epoch))
+            for weight in network.get_weights():
+                print(weight)
         network.eval()
         test_loss = 0
         if epoch % test_epochs == 0:
@@ -108,7 +113,17 @@ def train(network, epochs, provider_train, provider_test, test_epochs=5):
             
 
 if __name__ == '__main__':
-    json_parser = JsonParser("architecture.json")
+    print_weights = False
+    json_file = "architecture.json"
+    parser = argparse.ArgumentParser(description="Build your own neural network. Use JSON file.")
+    parser.add_argument("-f", "--file", help="submit JSON file; default file architecture.json", type=str)
+    parser.add_argument("-w", "--weights", help="print weights during learning", action="store_true")
+    args = parser.parse_args()
+    if args.weights:
+        print_weights = True
+    if args.file:
+        json_file = args.file
+    json_parser = JsonParser(json_file)
     json_parser.parse_json()
     train_df = pd.read_csv(json_parser.input_train_file_path)
     test_df = pd.read_csv(json_parser.input_test_file_path)
@@ -135,9 +150,10 @@ if __name__ == '__main__':
     nn = NeuralNet(inputs=p_train.number_of_inputs, hidden=hidden, outputs=p_train.number_of_outputs,
                    activations=act, loss=loss, seed=seed)
 
-    summary = train(nn, number_of_iterations, p_train, p_test)
+    summary = train(nn, number_of_iterations, p_train, p_test, print_weights)
     summary.show()
     visualization = VisualizationProvider(test_df, nn, type_of_assigment)
     x = visualization.show()
+    visualization.show_map()
     print("Accuracy: {}".format(x))
-    visualization.plot_map()
+

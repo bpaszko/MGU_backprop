@@ -1,5 +1,5 @@
 {
-  "learning_rate": 0.01,
+  "learning_rate": 0.00001,
   "momentum": 0.9,
   "number_of_iterations": 100,
   "seed": 123,
@@ -15,10 +15,18 @@
     {
       "activation": "sigmoid",
       "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
+    },
+    {
+      "activation": "sigmoid",
+      "neurons": 50
     }
   ],
   "type": "classification",
-  "train_df": "data/Classification/data.xor.train.10000.csv",
-  "test_df": "data/Classification/data.xor.test.10000.csv",
+  "train_df": "data/Classification/data.circles.train.10000.csv",
+  "test_df": "data/Classification/data.circles.test.10000.csv",
   "batch_size": 10
 }

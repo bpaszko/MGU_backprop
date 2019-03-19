@@ -1,6 +1,7 @@
 from .loss import Loss
 from numpy import sum
 
+
 class MSE(Loss):
     def __init__(self):
         self._grad = 0

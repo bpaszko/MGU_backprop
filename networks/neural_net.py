@@ -81,5 +81,8 @@ class NeuralNet:
         if self._optimizer is not None:
             self._optimizer.eval()
 
+    def get_weights(self):
+        return self._weights
+
     def __call__(self, x):
         return self.forward(x)
